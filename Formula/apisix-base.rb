@@ -149,6 +149,7 @@ class ApisixBase < Formula
         system "./configure", *args
         system "make"
         system "make", "install" 
+        system "mkdir", "-p", "#{prefix_or}/nginx/logs"
     end
 
     def caveats
@@ -156,11 +157,18 @@ class ApisixBase < Formula
         <<~EOS
           You can find the configuration files for openresty under #{prefix_or}/nginx/conf .
           APISIX base openresty was been installed on #{prefix_or} .
+          See verbose version: #{prefix_or}/bin/openresty -V
         EOS
     end
     
     test do
-        system "mkdir", "-p", "#{prefix_or}/nginx/logs"
-        system "#{bin}/openresty", "-V"
+        prefix_or = "#{prefix}/openresty"
+        bin_verbose_result = shell_output("#{prefix_or}/bin/openresty -V")
+        bin_verbose_result.force_encoding("UTF-8") if bin_verbose_result.respond_to?(:force_encoding)
+        assert_match(/#{$openresty_ver}/, bin_verbose_result)
+
+        conf_test_result = shell_output("#{prefix_or}/nginx/sbin/nginx -t")
+        conf_test_result.force_encoding("UTF-8") if conf_test_result.respond_to?(:force_encoding)
+        assert_match(/test is successful/, conf_test_result)
     end
 end
