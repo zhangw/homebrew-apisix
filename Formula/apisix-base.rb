@@ -150,6 +150,9 @@ class ApisixBase < Formula
         system "make"
         system "make", "install" 
         system "mkdir", "-p", "#{prefix_or}/nginx/logs"
+        ENV["OPENRESTY_PREFIX"] = "#{prefix_or}"
+        system "make", "-C", "#{Formula["apisix-ngx-module"].pkgshare}", "install"
+        system "make", "-C", "#{Formula["apisix-wasm-module"].pkgshare}", "install"
     end
 
     def caveats
@@ -169,6 +172,6 @@ class ApisixBase < Formula
 
         conf_test_result = shell_output("#{prefix_or}/nginx/sbin/nginx -t")
         conf_test_result.force_encoding("UTF-8") if conf_test_result.respond_to?(:force_encoding)
-        assert_match(/test is successful/, conf_test_result)
+        assert_match(/.*test is successful$/, conf_test_result)
     end
 end
