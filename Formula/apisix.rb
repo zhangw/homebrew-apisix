@@ -24,7 +24,7 @@ class Apisix < Formula
 
     def caveats
         <<~EOS
-          APISIX $apisix_ver was been installed on #{opt_pkgshare} .
+          APISIX #{$apisix_ver} was been installed on #{opt_pkgshare} .
         EOS
     end
 
